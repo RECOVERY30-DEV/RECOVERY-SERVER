@@ -60,3 +60,12 @@ out/
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# 민감 정보 (DB 계정 등) - CLAUDE.md 참고, 절대 커밋 금지
+.env
+.env.*
+!.env.example
+application-secret.yml
+application-secret.yaml
+application-local.yml
+application-local.yaml

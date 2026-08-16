@@ -22,7 +22,7 @@ public class GetMemberHandler {
   public ResponseEntity<MemberView> handle(@PathVariable Long id) {
     return memberRepository
         .findById(id)
-        .map(m -> new MemberView(m.getId(), m.getEmail().value(), m.getNickname()))
+        .map(m -> new MemberView(m.getId(), m.getEmail().getValue(), m.getNickname()))
         .map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
   }

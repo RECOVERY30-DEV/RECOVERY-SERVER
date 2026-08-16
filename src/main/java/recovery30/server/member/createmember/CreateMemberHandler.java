@@ -28,13 +28,14 @@ public class CreateMemberHandler {
   @PostMapping
   public ResponseEntity<CreateMemberResponse> handle(@RequestBody CreateMemberCommand command) {
     Member saved =
-        memberRepository.save(Member.register(new Email(command.email()), command.nickname()));
+        memberRepository.save(new Member(new Email(command.email()), command.nickname()));
 
     eventPublisher.publishEvent(
-        new MemberCreatedEvent(saved.getId(), saved.getEmail().value(), saved.getNickname()));
+        new MemberCreatedEvent(saved.getId(), saved.getEmail().getValue(), saved.getNickname()));
 
     return ResponseEntity.status(201)
         .body(
-            new CreateMemberResponse(saved.getId(), saved.getEmail().value(), saved.getNickname()));
+            new CreateMemberResponse(
+                saved.getId(), saved.getEmail().getValue(), saved.getNickname()));
   }
 }
