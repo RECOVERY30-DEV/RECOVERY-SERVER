@@ -38,6 +38,10 @@
           {
             "type": "command",
             "command": "cd \"$CLAUDE_PROJECT_DIR\" && ./gradlew test -q || echo '테스트 실패 (ArchUnit 아키텍처 규칙 포함) - 확인이 필요합니다' >&2"
+          },
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && ./scripts/check-uncommitted.sh"
           }
         ]
       }

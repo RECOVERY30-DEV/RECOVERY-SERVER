@@ -73,6 +73,15 @@ src/main/java/com/example/app
 - 새 기능 브랜치는 `./scripts/new-feature-branch.sh <기능명>` 으로 생성 (`main`에서 최신화 후 `feature/<기능명>` 생성)
 - 훅 스크립트를 수정하면 팀원 전체가 다시 pull 받아야 적용됨 (강제 배포 수단은 아님, 최초 설정을 각자 1회 실행해야 함)
 
+## Claude 자동 커밋 · 푸시 · PR 정책
+- `feature/*` 브랜치에서 커밋되지 않은 변경사항이 남아 있으면(Stop 훅이 `scripts/check-uncommitted.sh`로 감지), Claude는 사용자에게 다시 묻지 않고 아래를 자동으로 수행한다:
+  1. 변경 내용 검토 (민감정보 파일은 절대 add하지 않음)
+  2. `[타입] 설명` 컨벤션으로 커밋
+  3. `git push -u origin <현재 브랜치>`
+  4. `gh pr view`으로 해당 브랜치 PR 존재 확인 → 없으면 `gh pr create --fill`로 생성, 있으면 push만으로 갱신
+- `main`/`master`에서는 이 자동화가 동작하지 않음 (훅이 스킵) — `main`은 항상 사람이 직접 판단해서 다룰 것
+- 이 정책은 사용자가 명시적으로 요청한 것이며, 매번 push/PR 생성 전에 확인받지 않아도 됨
+
 ## 절대 하지 말 것
 - 다른 모듈의 `internal/`, `domain/` 패키지 직접 import
 - 레이어드 구조로 되돌리기 (Controller/Service/Repository 패키지 분리)
