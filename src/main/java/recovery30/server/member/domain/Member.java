@@ -11,6 +11,8 @@ import java.time.Instant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import recovery30.server.shared.exception.BusinessException;
+import recovery30.server.shared.exception.ErrorCode;
 
 /** 회원 애그리거트 루트 (JPA 엔티티). */
 @Entity
@@ -34,7 +36,7 @@ public class Member {
 
   public Member(Email email, String nickname) {
     if (nickname == null || nickname.isBlank()) {
-      throw new IllegalArgumentException("nickname은 비어있을 수 없습니다");
+      throw new BusinessException(ErrorCode.INVALID_NICKNAME);
     }
     this.email = email;
     this.nickname = nickname;
