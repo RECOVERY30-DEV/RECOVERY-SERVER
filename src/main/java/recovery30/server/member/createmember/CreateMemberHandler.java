@@ -10,6 +10,7 @@ import recovery30.server.member.domain.Email;
 import recovery30.server.member.domain.Member;
 import recovery30.server.member.internal.MemberRepository;
 import recovery30.server.shared.event.MemberCreatedEvent;
+import recovery30.server.shared.response.ApiResponse;
 
 /** '회원 가입' 슬라이스. 컨트롤러 + 서비스 + 레포 호출을 이 클래스 하나에서 처리한다. */
 @RestController
@@ -26,16 +27,16 @@ public class CreateMemberHandler {
   }
 
   @PostMapping
-  public ResponseEntity<CreateMemberResponse> handle(@RequestBody CreateMemberCommand command) {
+  public ResponseEntity<ApiResponse<CreateMemberResponse>> handle(
+      @RequestBody CreateMemberCommand command) {
     Member saved =
         memberRepository.save(new Member(new Email(command.email()), command.nickname()));
 
     eventPublisher.publishEvent(
         new MemberCreatedEvent(saved.getId(), saved.getEmail().getValue(), saved.getNickname()));
 
-    return ResponseEntity.status(201)
-        .body(
-            new CreateMemberResponse(
-                saved.getId(), saved.getEmail().getValue(), saved.getNickname()));
+    CreateMemberResponse response =
+        new CreateMemberResponse(saved.getId(), saved.getEmail().getValue(), saved.getNickname());
+    return ResponseEntity.status(201).body(ApiResponse.success(response));
   }
 }
