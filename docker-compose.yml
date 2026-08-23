@@ -1,15 +1,16 @@
 services:
-  mysql:
-    image: mysql:8.4
-    container_name: recovery30-mysql
+  postgres:
+    image: postgres:17
+    container_name: recovery30-postgres
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
-      MYSQL_DATABASE: ${DB_NAME:-recovery30}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-recovery30}
     ports:
-      - "${DB_PORT:-3306}:3306"
+      - "${DB_PORT:-5432}:5432"
     volumes:
-      - mysql-data:/var/lib/mysql
+      - postgres-data:/var/lib/postgresql/data
 
 volumes:
-  mysql-data:
+  postgres-data:

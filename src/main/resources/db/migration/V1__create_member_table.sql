@@ -1,7 +1,6 @@
 CREATE TABLE member (
-    id BIGINT NOT NULL AUTO_INCREMENT,
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     email VARCHAR(255) NOT NULL,
     nickname VARCHAR(255) NOT NULL,
-    registered_at DATETIME(6),
-    PRIMARY KEY (id)
-) ENGINE = InnoDB;
+    registered_at TIMESTAMP(6)
+);
