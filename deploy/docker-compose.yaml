@@ -1,0 +1,33 @@
+services:
+  blue:
+    container_name: blue
+    image: ghcr.io/recovery30-dev/recovery-server:${TAG:-latest}
+    expose:
+      - 8080
+    ports:
+      - "8080:8080"
+    mem_limit: 400m
+    restart: unless-stopped
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+  green:
+    container_name: green
+    image: ghcr.io/recovery30-dev/recovery-server:${TAG:-latest}
+    expose:
+      - 8080
+    ports:
+      - "8081:8080"
+    mem_limit: 400m
+    restart: unless-stopped
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
