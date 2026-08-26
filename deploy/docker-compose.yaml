@@ -1,7 +1,7 @@
 services:
   blue:
     container_name: blue
-    image: ghcr.io/recovery30-dev/recovery-server:${TAG:-latest}
+    image: haul123/recovery30:${TAG:-latest}
     expose:
       - 8080
     ports:
@@ -17,7 +17,7 @@ services:
 
   green:
     container_name: green
-    image: ghcr.io/recovery30-dev/recovery-server:${TAG:-latest}
+    image: haul123/recovery30:${TAG:-latest}
     expose:
       - 8080
     ports:
