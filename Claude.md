@@ -29,18 +29,19 @@
 
 ## 폴더 구조
 ```
-src/main/java/com/example/app
-├── order/
-│   ├── api/                 ← 외부에 노출하는 인터페이스만
-│   ├── domain/               ← 애그리거트 루트, 값 객체
-│   ├── createorder/          ← 슬라이스: Command/Handler/Response
-│   ├── getorder/              ← 슬라이스: Query/Handler/View
-│   └── internal/              ← 모듈 내부 전용, 외부 참조 금지
-├── product/                   (구조 동일)
-├── member/                    (구조 동일)
+src/main/java/recovery30/server
+├── member/
+│   ├── api/                 ← 외부에 노출하는 인터페이스만 (예: MemberApi)
+│   ├── domain/               ← 애그리거트 루트, 값 객체 (예: Member, Email)
+│   ├── createmember/          ← 슬라이스: Command/Handler/Response
+│   ├── getmember/              ← 슬라이스: Query/Handler/View
+│   └── internal/              ← 모듈 내부 전용 (Repository, ApiImpl), 외부 참조 금지
+├── (다른 bounded context 모듈)  (구조 동일)
 └── shared/                    ← 공유 커널
     ├── event/                 ← 모듈 간 비동기 통신
-    └── vo/                    ← 여러 모듈 공통 값 객체
+    ├── response/               ← 공통 응답 포맷 (ApiResponse, ApiError)
+    ├── exception/              ← 공통 예외 체계 (BusinessException, ErrorCode, GlobalExceptionHandler)
+    └── web/                    ← 전역 web 설정 (CorsConfig, OpenApiConfig)
 ```
 
 ## 새 기능 추가 시 작업 순서
@@ -50,12 +51,48 @@ src/main/java/com/example/app
 4. Command/Query → Handler → Response 순으로 작성
 5. `./gradlew test` (ArchUnit 규칙 포함) 통과 확인 후 커밋
 
+## 코드 컨벤션
+
+### DTO / 도메인 객체
+- `Command`/`Query`/`Response`/`View`는 Java record로 작성 (Lombok 사용 안 함)
+- 엔티티·값 객체(`domain/` 패키지)는 `@Getter @Setter @NoArgsConstructor` + 별도 생성자에서 유효성 검증, 실패 시 `BusinessException` throw (예: `Member`, `Email` 참고)
+
+### 응답 포맷
+- 모든 컨트롤러(Handler)는 `ResponseEntity<ApiResponse<T>>`를 반환한다
+- 성공: `ApiResponse.success(data)`
+- 실패는 직접 만들지 않는다 — `BusinessException(ErrorCode.XXX)`를 던지면 `GlobalExceptionHandler`가 `ApiResponse.error(...)`로 변환해서 내려준다
+- 새 에러가 필요하면 `shared/exception/ErrorCode`에 상수 추가. 코드 네이밍: `{모듈}_{HTTP상태}_{순번}` (예: `MEMBER_400_2`), 공통 에러는 `COMMON_` 접두사
+
+### API 문서화 (Swagger / springdoc-openapi)
+- 슬라이스 구조상 엔드포인트마다 클래스가 따로이므로, `@Tag(name = "모듈명", description = "...")`을 그 모듈의 모든 Handler 클래스에 동일하게 붙여서 Swagger UI에서 한 그룹으로 묶는다
+- 메서드에 `@Operation(summary = "...", description = "...")`을 한국어로 작성
+- `@ApiResponses`로 성공/실패 상태코드를 명시하고, 실패 응답은 `content = @Content(schema = @Schema(implementation = ApiError.class))`로 에러 스키마를 참조한다 (`io.swagger.v3.oas.annotations.responses.ApiResponse`는 우리 `ApiResponse`와 이름이 겹치므로 완전한 패키지 경로로 사용)
+- Command/Response/View record의 각 필드에 `@Schema(description = "...", example = "...")` 추가
+- 참고 구현: `CreateMemberHandler`, `GetMemberHandler`
+
+### DB / 마이그레이션
+- 스키마는 Flyway가 관리한다 (`spring.jpa.hibernate.ddl-auto=validate`) — 엔티티만 고치고 마이그레이션을 안 만들면 애플리케이션이 기동 실패한다
+- 새 테이블/컬럼이 필요하면 `src/main/resources/db/migration/V{n}__{설명}.sql` 추가 (다음 버전 번호는 기존 파일 중 가장 큰 `V{n}` + 1)
+- 로컬 개발 DB는 `docker compose up -d` (MySQL, `.env` 없으면 root/root/recovery30/3306 기본값 사용)
+- 클라우드 DB에 직접 붙어야 할 때만 `application-local.yml`을 만들어 쓴다 (gitignore 대상, `SPRING_PROFILES_ACTIVE=local`로 활성화)
+
+### 포맷팅
+- 커밋 전 `./gradlew spotlessApply` (googleJavaFormat 기준). CI에서 `spotlessCheck`로 검증하므로 안 돌리면 PR이 실패한다
+- spotless 대상은 `src/**/*.java`만 — QueryDSL이 생성하는 `build/generated/querydsl`은 제외되어 있음
+
+## 인프라 / 배포
+- `main`에 머지되면 GitHub Actions(`.github/workflows/deploy.yml`)가 Docker Hub(`haul123/recovery30`)로 이미지를 빌드/푸시하고, EC2에 블루그린 방식으로 무중단 배포한다
+- 배포 스크립트/compose 파일은 `deploy/` 디렉토리 (`docker-compose.yaml`, `deploy.sh`)에 버전관리되어 있고, 배포마다 그대로 EC2로 복사되어 실행된다
+- 헬스체크는 `/actuator/health` 기준, 실패하면 자동 롤백(새 컨테이너만 내리고 기존 컨테이너 유지)
+- 운영 도메인: `https://recovery-30.shop` (Let's Encrypt 인증서 적용됨, 자동 갱신)
+- Swagger UI가 현재 운영 서버에도 인증 없이 그대로 노출되어 있음 — 실제 서비스 전환 시 `springdoc.swagger-ui.enabled=false` 등으로 막을 것
+
 ## 빌드 / 실행 명령
 ```bash
 ./gradlew build            # 빌드
 ./gradlew test             # 테스트 (ArchUnit 아키텍처 규칙 포함)
 ./gradlew bootRun          # 로컬 서버 실행
-./gradlew test --tests "com.example.app.order.createorder.*"   # 특정 슬라이스만 테스트
+./gradlew test --tests "recovery30.server.member.createmember.*"   # 특정 슬라이스만 테스트
 ```
 
 ## 커밋 / PR 규칙
