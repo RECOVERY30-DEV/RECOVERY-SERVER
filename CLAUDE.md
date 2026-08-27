@@ -76,6 +76,13 @@ src/main/java/recovery30/server
 - 로컬 개발 DB는 `docker compose up -d` (MySQL, `.env` 없으면 root/root/recovery30/3306 기본값 사용)
 - 클라우드 DB에 직접 붙어야 할 때만 `application-local.yml`을 만들어 쓴다 (gitignore 대상, `SPRING_PROFILES_ACTIVE=local`로 활성화)
 
+### 테스트
+- 슬라이스 테스트는 `@SpringBootTest @AutoConfigureMockMvc @Transactional` + `MockMvc`로 API를 직접 호출하는 통합테스트 스타일로 작성한다 (컨트롤러/서비스 목킹해서 쪼개지 않음)
+- 테스트 메서드명은 한국어로 `조건_결과()` 형태 (예: `이메일_형식이_잘못되면_400과_에러코드를_반환한다`)
+- 응답 검증은 `ApiResponse` 포맷 그대로 확인: `jsonPath("$.success")`, 성공 시 `$.data.*`, 실패 시 `$.error.code`
+- 도메인 객체(값 객체 등)의 검증 로직은 별도 단위테스트로 (예: `EmailTest`, `MemberTest`)
+- 참고 구현: `CreateMemberHandlerTest`, `GetMemberHandlerTest`
+
 ### 포맷팅
 - 커밋 전 `./gradlew spotlessApply` (googleJavaFormat 기준). CI에서 `spotlessCheck`로 검증하므로 안 돌리면 PR이 실패한다
 - spotless 대상은 `src/**/*.java`만 — QueryDSL이 생성하는 `build/generated/querydsl`은 제외되어 있음
