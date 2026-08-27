@@ -9,7 +9,9 @@ public enum ErrorCode {
 
   INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST, "MEMBER_400_1", "올바르지 않은 이메일 형식입니다"),
   INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "MEMBER_400_2", "닉네임은 비어있을 수 없습니다"),
-  MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_404", "존재하지 않는 회원입니다");
+  MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_404", "존재하지 않는 회원입니다"),
+
+  FORECAST_NOT_FOUND(HttpStatus.NOT_FOUND, "FORECAST_404_1", "예측 이력이 없습니다");
 
   private final HttpStatus status;
   private final String code;
