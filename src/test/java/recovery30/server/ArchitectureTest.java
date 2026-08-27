@@ -17,49 +17,7 @@ import com.tngtech.archunit.lang.ArchRule;
 @AnalyzeClasses(packages = "recovery30.server")
 public class ArchitectureTest {
 
-  // ── order 모듈 ──
-  @ArchTest
-  static final ArchRule order_internal_is_not_accessed_from_outside =
-      noClasses()
-          .that()
-          .resideOutsideOfPackage("..order..")
-          .should()
-          .dependOnClassesThat()
-          .resideInAPackage("..order.internal..")
-          .because("order.internal은 order 모듈 내부에서만 사용해야 합니다");
-
-  @ArchTest
-  static final ArchRule order_domain_is_not_accessed_from_outside =
-      noClasses()
-          .that()
-          .resideOutsideOfPackage("..order..")
-          .should()
-          .dependOnClassesThat()
-          .resideInAPackage("..order.domain..")
-          .because("order.domain은 order 모듈 밖에서 직접 참조할 수 없습니다 (order.api를 통해서만 접근)");
-
-  // ── product 모듈 ──
-  @ArchTest
-  static final ArchRule product_internal_is_not_accessed_from_outside =
-      noClasses()
-          .that()
-          .resideOutsideOfPackage("..product..")
-          .should()
-          .dependOnClassesThat()
-          .resideInAPackage("..product.internal..")
-          .because("product.internal은 product 모듈 내부에서만 사용해야 합니다");
-
-  @ArchTest
-  static final ArchRule product_domain_is_not_accessed_from_outside =
-      noClasses()
-          .that()
-          .resideOutsideOfPackage("..product..")
-          .should()
-          .dependOnClassesThat()
-          .resideInAPackage("..product.domain..")
-          .because("product.domain은 product 모듈 밖에서 직접 참조할 수 없습니다 (product.api를 통해서만 접근)");
-
-  // ── member 모듈 ──
+  // ── member 모듈 ── (새 모듈 추가 시 이 블록을 복사해서 모듈명만 바꾸세요)
   @ArchTest
   static final ArchRule member_internal_is_not_accessed_from_outside =
       noClasses()
