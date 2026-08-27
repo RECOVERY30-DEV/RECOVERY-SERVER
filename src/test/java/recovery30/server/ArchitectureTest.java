@@ -187,4 +187,46 @@ public class ArchitectureTest {
           .resideInAPackage("..consultation.domain..")
           .because(
               "consultation.domain은 consultation 모듈 밖에서 직접 참조할 수 없습니다 (consultation.api를 통해서만 접근)");
+
+  // ── followup 모듈 ──
+  @ArchTest
+  static final ArchRule followup_internal_is_not_accessed_from_outside =
+      noClasses()
+          .that()
+          .resideOutsideOfPackage("..followup..")
+          .should()
+          .dependOnClassesThat()
+          .resideInAPackage("..followup.internal..")
+          .because("followup.internal은 followup 모듈 내부에서만 사용해야 합니다");
+
+  @ArchTest
+  static final ArchRule followup_domain_is_not_accessed_from_outside =
+      noClasses()
+          .that()
+          .resideOutsideOfPackage("..followup..")
+          .should()
+          .dependOnClassesThat()
+          .resideInAPackage("..followup.domain..")
+          .because("followup.domain은 followup 모듈 밖에서 직접 참조할 수 없습니다 (followup.api를 통해서만 접근)");
+
+  // ── audit 모듈 ──
+  @ArchTest
+  static final ArchRule audit_internal_is_not_accessed_from_outside =
+      noClasses()
+          .that()
+          .resideOutsideOfPackage("..audit..")
+          .should()
+          .dependOnClassesThat()
+          .resideInAPackage("..audit.internal..")
+          .because("audit.internal은 audit 모듈 내부에서만 사용해야 합니다");
+
+  @ArchTest
+  static final ArchRule audit_domain_is_not_accessed_from_outside =
+      noClasses()
+          .that()
+          .resideOutsideOfPackage("..audit..")
+          .should()
+          .dependOnClassesThat()
+          .resideInAPackage("..audit.domain..")
+          .because("audit.domain은 audit 모듈 밖에서 직접 참조할 수 없습니다 (audit.api를 통해서만 접근)");
 }

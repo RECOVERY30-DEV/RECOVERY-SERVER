@@ -38,10 +38,19 @@ public class RiskDriver {
 
   private Long contributionAmount;
 
+  /** 금액이 아닌 지표 표시용 (예: "-18%", "약 32% 감소"). */
+  private String metricText;
+
   @Column(name = "is_estimating", nullable = false)
   private boolean estimating = false;
 
   private LocalDate occurrenceDate;
+
+  /** 복수 발생일 표시용 (예: "11월 20일·25일 발생"). 정렬은 {@link #occurrenceDate} 사용. */
+  private String occurrenceText;
+
+  /** 영향 기간 표시용 (예: "6월 15일~28일 영향"). */
+  private String impactPeriodText;
 
   @Column(columnDefinition = "TEXT")
   private String description;
