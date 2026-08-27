@@ -9,4 +9,6 @@ public interface ForecastRunRepository extends JpaRepository<ForecastRun, Long> 
 
   /** 사업자의 가장 최근 예측 실행 1건 (기준일 → 생성시각 내림차순). */
   Optional<ForecastRun> findTopByBusinessIdOrderByBaseDateDescCreatedAtDesc(Long businessId);
+
+  boolean existsByBusinessId(Long businessId);
 }
