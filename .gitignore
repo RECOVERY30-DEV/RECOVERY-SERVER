@@ -1,6 +1,9 @@
 HELP.md
 .gradle
 build/
+
+# QueryDSL / annotation processor 생성물 (IDE가 src/main/generated 에 떨굼) - 커밋 금지
+src/main/generated/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
