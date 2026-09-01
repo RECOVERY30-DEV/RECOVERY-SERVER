@@ -72,6 +72,8 @@
 | **`V11__recovery_extension_tables.sql`** | `recovery_self_action_plans/items`, `recovery_program_documents`, `recovery_program_recommendations`, `recovery_consultation_options`, `recovery_counselor_slots` |
 | **`V12__packet_transfer_and_followup_tables.sql`** | `recovery_packet_transfers`, `recovery_followup_schedules/results`, `recovery_execution_status` |
 | **`V13__audit_and_governance_tables.sql`** | `audit_logs`, `audit_consent_logs`, `audit_ai_generations`, `audit_model_versions`, `audit_ruleset_versions`, `audit_holidays`, `audit_notifications` |
+| `V14__seed_reference_data.sql` | 레퍼런스 시드: 버전 마스터, `core_consent_types` 3건, 상담사 2명, 지원제도 3건 + 규칙/서류, 2025 공휴일 |
+| **`V15__slot_capacity_and_eligibility_check_items.sql`** | `recovery_counselor_slots` 정원 컬럼(`capacity`, `booked_count`) 추가 + `recovery_program_eligibility_check_items` 신규 (피그마 갭 ①②) |
 
 ---
 
@@ -94,9 +96,9 @@
 | 회복안 비교 (3종) | `forecast_runs` ✅, `forecast_risk_drivers` ✅, `recovery_options` ✅, `recovery_scenarios` ✅, `recovery_scenario_options` ✅, `recovery_user_option_selections` ✅ |
 | 셀프 액션 저장 | `recovery_self_action_plans` 🆕, `recovery_self_action_items` 🆕, `recovery_scenarios` ✅ |
 | 지원사업 목록 | `recovery_support_programs` ✅, `recovery_program_recommendations` 🆕 |
-| 지원사업 상세 | `recovery_support_programs` ✅, `recovery_program_eligibility_rules` ✅, `recovery_program_eligibility_checks` ✅, `recovery_program_documents` 🆕 |
+| 지원사업 상세 | `recovery_support_programs` ✅, `recovery_program_eligibility_rules` ✅, `recovery_program_eligibility_checks` ✅, `recovery_program_eligibility_check_items` 🆕(V15), `recovery_program_documents` 🆕 |
 | Recovery Packet | `recovery_packets` ✅, `recovery_packet_transfers` 🆕, `recovery_followup_schedules` 🆕 |
-| 상담 예약 | `recovery_consultations` ✅, `recovery_consultation_options` 🆕, `recovery_counselors` ✅, `recovery_counselor_slots` 🆕 |
+| 상담 예약 | `recovery_consultations` ✅, `recovery_consultation_options` 🆕, `recovery_counselors` ✅, `recovery_counselor_slots` 🆕 ➕col(V15 `capacity`/`booked_count`) |
 | 사후점검 | `recovery_followup_schedules` 🆕, `recovery_followup_results` 🆕, `recovery_execution_status` 🆕, `forecast_runs` ✅ |
 | 상담자 대시보드 (뷰) | `recovery_consultations` + `forecast_runs` + `recovery_packets` — `counselor_queue` VIEW (미구현, 6.6) |
 
@@ -124,7 +126,8 @@
 - **`recovery_program_documents`** — 지원제도 필요서류.
 - **`recovery_program_recommendations`** — 예측 실행별 추천, `rank_no`, `match_reason`. `UNIQUE(forecast_run_id, program_id)`.
 - **`recovery_consultation_options`** — 상담 ↔ 회복안 N:M.
-- **`recovery_counselor_slots`** — 예약 가능 슬롯. `status` ∈ {`OPEN`,`BOOKED`,`BLOCKED`}, `CHECK (start_at < end_at)`.
+- **`recovery_counselor_slots`** — 예약 가능 슬롯. `status` ∈ {`OPEN`,`BOOKED`,`BLOCKED`}, `CHECK (start_at < end_at)`. **V15**: `capacity`/`booked_count` 추가 — 화면의 "잔여 N석" = `capacity - booked_count`, 예약 가능 = `status <> 'BLOCKED' AND booked_count < capacity`. `CHECK (capacity >= 1)`, `CHECK (0 <= booked_count <= capacity)`.
+- **`recovery_program_eligibility_check_items`** (V15) — 자격 판정의 **규칙 단위** 결과. `recovery_program_eligibility_checks`는 (business, program) 1행 롤업이라 지원사업 상세 화면의 "규칙별 체크박스 + 개별 문구"를 못 그림. `check_id`+`rule_id`(`UNIQUE`), `result` ∈ {`LIKELY_PASS`,`NEEDS_REVIEW`,`LIKELY_FAIL`,`UNKNOWN`}, `note_text`, `is_advisory = TRUE` CHECK 고정. `ON DELETE CASCADE`(부모 check / rule 양쪽).
 - **`recovery_packet_transfers`** — Packet 전송 이력. `scope_json`(전송 범위 4항목), `consent_id` **NOT NULL**.
 - **`recovery_followup_schedules`** — `checkpoint` ∈ {`D30`,`D60`,`D90`}, `status` ∈ {`SCHEDULED`,`DONE`,`SKIPPED`}, `consent_id` **NOT NULL**.
 - **`recovery_followup_results`** — schedule당 1건(`UNIQUE`). `balance_recovered` ∈ {`YES`,`PARTIAL`,`NO`}, `has_delinquency`, `latest_forecast_run_id`.

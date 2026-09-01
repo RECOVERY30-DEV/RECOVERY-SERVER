@@ -35,4 +35,12 @@ public class CounselorSlot {
   /** OPEN / BOOKED / BLOCKED */
   @Column(nullable = false)
   private String status = "OPEN";
+
+  /** 슬롯 정원. 잔여석 = capacity - bookedCount */
+  @Column(nullable = false)
+  private int capacity = 1;
+
+  /** 현재 예약 수 */
+  @Column(nullable = false)
+  private int bookedCount = 0;
 }
