@@ -26,7 +26,7 @@ class GetSafetyBufferHandlerTest {
   @Test
   void 안전잔액과_buffer_충족여부를_반환한다() throws Exception {
     ForecastRun run = ForecastFixtures.run(1L, LocalDate.of(2025, 7, 15), "STABLE");
-    run.setMinBalanceOptimistic(830_000L);
+    run.setMinBalanceExpected(830_000L);
     run.setBufferMet(true);
     run = forecastRunRepository.save(run);
 

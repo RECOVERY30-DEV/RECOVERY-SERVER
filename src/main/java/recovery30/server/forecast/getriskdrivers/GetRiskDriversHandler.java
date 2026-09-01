@@ -88,6 +88,7 @@ public class GetRiskDriversHandler {
                         d.getTitle(),
                         d.getOccurrenceDate(),
                         d.getOccurrenceText(),
+                        d.getImpactPeriodText(),
                         d.getMetricText(),
                         d.getContributionAmount(),
                         d.isEstimating(),

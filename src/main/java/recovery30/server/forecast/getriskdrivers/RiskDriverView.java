@@ -15,6 +15,7 @@ public record RiskDriverView(
     @Schema(description = "원인 제목", example = "월말 원리금 임차료 집중") String title,
     @Schema(description = "발생 예정일(정렬·표시용)", example = "2025-07-31") LocalDate occurrenceDate,
     @Schema(description = "복수 발생일 표시 문자열", example = "11월 20일·25일 발생") String occurrenceText,
+    @Schema(description = "영향 기간 표시 문자열", example = "6월 15일~28일 영향") String impactPeriodText,
     @Schema(description = "금액이 아닌 지표 문자열", example = "-18%") String metricText,
     @Schema(description = "부족 기여 금액(원). null이면 '확인 필요'", example = "-1850000")
         Long contributionAmount,

@@ -49,7 +49,7 @@ public class GetSafetyBufferHandler {
             .orElseThrow(() -> new BusinessException(ErrorCode.FORECAST_NOT_FOUND));
 
     SafetyBufferView view =
-        new SafetyBufferView(run.getId(), run.getMinBalanceOptimistic(), run.isBufferMet());
+        new SafetyBufferView(run.getId(), run.getMinBalanceExpected(), run.isBufferMet());
     return ResponseEntity.ok(ApiResponse.success(view));
   }
 }
