@@ -1,0 +1,16 @@
+# 데모 / QA 프로파일.
+# 활성화:  SPRING_PROFILES_ACTIVE=demo ./gradlew bootRun
+#
+#   - 레퍼런스 데이터(동의 항목, 지원제도, 상담사, 공휴일, 버전) : Flyway V14 가 모든 환경에 적재
+#   - 데모 페르소나(QA-RISK / QA-STABLE / QA-HOLD / QA-NEW)      : @Profile("demo") 시더가 기동 시 주입
+#
+# 페르소나별 검증 포인트
+#   QA-RISK   : 홈 정상(밴드/부족일 D-11/위험신호 3건/자동이체 coverage 61%)
+#   QA-STABLE : shortfall.hasShortfall=false, 안정 상태
+#   QA-HOLD   : min-balance.available=false, coverage 임계 미만 다수
+#   QA-NEW    : GET /forecasts/latest -> 404 FORECAST_404_1
+#
+# 시딩만 끄고 싶으면 demo.seed.enabled=false (프로파일은 유지).
+demo:
+  seed:
+    enabled: true
