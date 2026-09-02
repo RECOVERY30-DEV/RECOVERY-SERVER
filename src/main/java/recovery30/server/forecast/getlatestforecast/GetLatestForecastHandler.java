@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import recovery30.server.forecast.domain.ForecastRun;
+import recovery30.server.forecast.domain.ForecastStatus;
 import recovery30.server.forecast.internal.ForecastRunRepository;
 import recovery30.server.shared.exception.BusinessException;
 import recovery30.server.shared.exception.ErrorCode;
@@ -53,7 +54,11 @@ public class GetLatestForecastHandler {
             .orElseThrow(() -> new BusinessException(ErrorCode.FORECAST_NOT_FOUND));
 
     LatestForecastView view =
-        new LatestForecastView(run.getId(), run.getBaseDate(), run.getCreatedAt(), run.getStatus());
+        new LatestForecastView(
+            run.getId(),
+            run.getBaseDate(),
+            run.getCreatedAt(),
+            ForecastStatus.valueOf(run.getStatus()));
     return ResponseEntity.ok(ApiResponse.success(view));
   }
 }

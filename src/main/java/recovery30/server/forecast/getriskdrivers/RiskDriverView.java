@@ -10,7 +10,13 @@ import java.util.List;
  */
 public record RiskDriverView(
     @Schema(description = "순위", example = "1") Integer rank,
-    @Schema(description = "원인 코드(아이콘·딥링크 매핑)", example = "RENT_LOAN_CONCENTRATION")
+    @Schema(
+            description =
+                "원인 코드. 아이콘·딥링크 매핑용 식별자로, 고정 enum이 아니라 확장 가능한 카탈로그다. "
+                    + "현재 값: RENT_LOAN_CONCENTRATION(월말 원리금·임차료 집중), SALES_DECLINE_4W(최근 4주 매출 감소), "
+                    + "AUTODEBIT_OVERLAP(자동이체 납부일 겹침), SEASONAL_RECOVERY_DELAY(계절적 회복 지연). "
+                    + "미매핑 코드는 기본 아이콘으로 표시할 것.",
+            example = "RENT_LOAN_CONCENTRATION")
         String driverCode,
     @Schema(description = "원인 제목", example = "월말 원리금 임차료 집중") String title,
     @Schema(description = "발생 예정일(정렬·표시용)", example = "2025-07-31") LocalDate occurrenceDate,
@@ -24,8 +30,13 @@ public record RiskDriverView(
 
   /** 원인 상세 화면 "근거 거래" 한 줄. */
   public record EvidenceView(
-      @Schema(description = "참조 유형", example = "CARD_SETTLEMENT") String refType,
-      @Schema(description = "참조 레코드 ID", example = "3391") Long refId,
+      @Schema(
+              description =
+                  "근거가 된 원천 레코드의 종류. 현재 값: CARD_SETTLEMENT, BANK_ACCOUNT, LOAN_SCHEDULE, "
+                      + "RECURRING_EXPENSE, ADJUSTMENT. refId와 함께 원천 데이터로 역추적하는 용도.",
+              example = "CARD_SETTLEMENT")
+          String refType,
+      @Schema(description = "참조 레코드 ID (refType 테이블의 PK)", example = "3391") Long refId,
       @Schema(description = "표시 라벨", example = "신한카드 정산 5건") String label,
       @Schema(description = "기간 문자열", example = "6월 2일~11일") String periodText) {}
 }
