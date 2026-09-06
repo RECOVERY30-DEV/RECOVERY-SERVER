@@ -1,5 +1,6 @@
 package recovery30.server.recoveryoption.internal;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,8 @@ import recovery30.server.forecast.api.ForecastApi;
 import recovery30.server.recoveryoption.domain.RecoveryOption;
 import recovery30.server.recoveryoption.domain.Scenario;
 import recovery30.server.recoveryoption.domain.ScenarioOption;
+import recovery30.server.recoveryoption.domain.SelfActionItem;
+import recovery30.server.recoveryoption.domain.SelfActionPlan;
 
 /**
  * demo 프로파일에서 회복안 비교 화면 데이터를 주입한다.
@@ -45,18 +48,24 @@ public class DemoRecoveryOptionSeeder implements ApplicationRunner {
   private final RecoveryOptionRepository optionRepository;
   private final ScenarioRepository scenarioRepository;
   private final ScenarioOptionRepository scenarioOptionRepository;
+  private final SelfActionPlanRepository selfActionPlanRepository;
+  private final SelfActionItemRepository selfActionItemRepository;
 
   public DemoRecoveryOptionSeeder(
       BusinessApi businessApi,
       ForecastApi forecastApi,
       RecoveryOptionRepository optionRepository,
       ScenarioRepository scenarioRepository,
-      ScenarioOptionRepository scenarioOptionRepository) {
+      ScenarioOptionRepository scenarioOptionRepository,
+      SelfActionPlanRepository selfActionPlanRepository,
+      SelfActionItemRepository selfActionItemRepository) {
     this.businessApi = businessApi;
     this.forecastApi = forecastApi;
     this.optionRepository = optionRepository;
     this.scenarioRepository = scenarioRepository;
     this.scenarioOptionRepository = scenarioOptionRepository;
+    this.selfActionPlanRepository = selfActionPlanRepository;
+    this.selfActionItemRepository = selfActionItemRepository;
   }
 
   @Override
@@ -64,6 +73,7 @@ public class DemoRecoveryOptionSeeder implements ApplicationRunner {
   public void run(ApplicationArguments args) {
     seedCatalogIfEmpty();
     seedRiskScenarios();
+    seedRiskSelfActionPlan();
   }
 
   private void seedCatalogIfEmpty() {
@@ -187,6 +197,59 @@ public class DemoRecoveryOptionSeeder implements ApplicationRunner {
     }
 
     log.info("[demo] QA-RISK run {} 시나리오 3건(BASELINE + SIMULATED 2) 시딩", runId);
+  }
+
+  /** QA-RISK 가 "상환조건 조정"을 자체 실행 계획으로 저장해 둔 상태 — 셀프 액션 저장 / 사후점검 화면 검증용. */
+  private void seedRiskSelfActionPlan() {
+    Long businessId = businessApi.findBusinessIdByRegNo("QA-RISK").orElse(null);
+    if (businessId == null) {
+      return;
+    }
+    Long runId = forecastApi.findLatestForecastRunId(businessId).orElse(null);
+    if (runId == null) {
+      return;
+    }
+    if (!selfActionPlanRepository.findByForecastRunIdOrderByIdAsc(runId).isEmpty()) {
+      log.info("[demo] run {} 자체 실행 계획이 이미 있어 건너뜁니다", runId);
+      return;
+    }
+    Long repaymentAdjustId =
+        optionRepository
+            .findByOptionCode("REPAYMENT_ADJUST")
+            .map(RecoveryOption::getId)
+            .orElse(null);
+    if (repaymentAdjustId == null) {
+      log.warn("[demo] REPAYMENT_ADJUST 회복안이 없어 자체 실행 계획을 건너뜁니다");
+      return;
+    }
+
+    SelfActionPlan plan = new SelfActionPlan();
+    plan.setBusinessId(businessId);
+    plan.setForecastRunId(runId);
+    plan.setRecoveryOptionId(repaymentAdjustId);
+    plan.setExpectedEffectText("첫 부족일 +16일 연장, 월 상환액 약 15만 원 감소 예상");
+    plan.setStatus("ACTIVE");
+    plan.setSavedAt(Instant.parse("2025-07-15T02:10:00Z"));
+    plan = selfActionPlanRepository.save(plan);
+
+    selfActionItem(
+        plan.getId(), "거래 은행에 원리금 납부일 변경 신청", LocalDate.of(2025, 7, 18), "DONE", "영업점 방문 완료");
+    selfActionItem(
+        plan.getId(), "임대인에게 7월 임차료 납부일 조정 요청", LocalDate.of(2025, 7, 21), "PENDING", null);
+    selfActionItem(plan.getId(), "자동이체 3건 납부일 분산 재설정", LocalDate.of(2025, 7, 22), "PENDING", null);
+
+    log.info("[demo] QA-RISK run {} 자체 실행 계획 1건(준비 항목 3건) 시딩", runId);
+  }
+
+  private void selfActionItem(
+      long planId, String title, LocalDate targetDate, String status, String memo) {
+    SelfActionItem item = new SelfActionItem();
+    item.setSelfActionPlanId(planId);
+    item.setTitle(title);
+    item.setTargetDate(targetDate);
+    item.setStatus(status);
+    item.setMemo(memo);
+    selfActionItemRepository.save(item);
   }
 
   private static RecoveryOption option(
