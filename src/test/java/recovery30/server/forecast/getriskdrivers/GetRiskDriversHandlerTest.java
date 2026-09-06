@@ -63,11 +63,12 @@ class GetRiskDriversHandlerTest {
   }
 
   @Test
-  void include_evidence면_근거_거래를_포함한다() throws Exception {
+  void include_evidence면_설명_가정_근거거래를_포함한다() throws Exception {
     ForecastRun run = newRun();
-    RiskDriver driver =
-        riskDriverRepository.save(
-            ForecastFixtures.driver(run.getId(), 1, "SALES_DROP", "최근 8주 매출 감소"));
+    RiskDriver driver = ForecastFixtures.driver(run.getId(), 1, "SALES_DROP", "최근 8주 매출 감소");
+    driver.setDescription("최근 8주 평균 대비 카드 정산 수입이 약 32% 줄었습니다.");
+    driver.setAssumptionText("직전 4주 평균 입금 패턴 반영");
+    driver = riskDriverRepository.save(driver);
     evidenceRepository.save(ForecastFixtures.evidence(driver.getId(), "신한카드 정산 5건", "6월 2일~11일"));
 
     mockMvc
@@ -75,6 +76,8 @@ class GetRiskDriversHandlerTest {
             get("/api/forecasts/{forecastRunId}/risk-drivers", run.getId())
                 .param("include", "evidence"))
         .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data[0].description").value("최근 8주 평균 대비 카드 정산 수입이 약 32% 줄었습니다."))
+        .andExpect(jsonPath("$.data[0].assumptionText").value("직전 4주 평균 입금 패턴 반영"))
         .andExpect(jsonPath("$.data[0].evidence.length()").value(1))
         .andExpect(jsonPath("$.data[0].evidence[0].label").value("신한카드 정산 5건"))
         .andExpect(jsonPath("$.data[0].evidence[0].periodText").value("6월 2일~11일"));
