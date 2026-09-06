@@ -147,6 +147,7 @@ public class DemoForecastSeeder implements ApplicationRunner {
     narrative(run.getId(), "STABLE_REASON", 1, "월말 임차료·원리금 납부 일정이 잔액 대비 감당 가능한 수준입니다.");
     narrative(
         run.getId(), "STATE_CHANGE_HINT", 0, "현금매출·타행자금을 보정하지 않았거나 예정 지출이 갑자기 늘면 상태가 바뀔 수 있습니다.");
+    narrative(run.getId(), "DISCLAIMER", 0, "지원 자격·금융 승인·금리·한도는 상담자 및 공식 출처의 최종 확인이 필요합니다.");
 
     log.info("[demo] QA-STABLE forecastRunId={}", run.getId());
   }

@@ -51,4 +51,14 @@ public final class ForecastFixtures {
     c.setBelowThreshold(below);
     return c;
   }
+
+  public static recovery30.server.forecast.domain.ForecastRunNarrative narrative(
+      long forecastRunId, String kind, int seq, String text) {
+    var n = new recovery30.server.forecast.domain.ForecastRunNarrative();
+    n.setForecastRunId(forecastRunId);
+    n.setKind(kind);
+    n.setSeq(seq);
+    n.setText(text);
+    return n;
+  }
 }
