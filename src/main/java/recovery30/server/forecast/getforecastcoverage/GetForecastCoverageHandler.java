@@ -50,7 +50,7 @@ public class GetForecastCoverageHandler {
   })
   @GetMapping("/{forecastRunId}/coverage")
   public ResponseEntity<ApiResponse<List<CoverageView>>> handle(
-      @Parameter(description = "예측 실행 ID", example = "4821") @PathVariable Long forecastRunId) {
+      @Parameter(description = "예측 실행 ID", example = "1") @PathVariable Long forecastRunId) {
     if (!forecastRunRepository.existsById(forecastRunId)) {
       throw new BusinessException(ErrorCode.FORECAST_NOT_FOUND);
     }

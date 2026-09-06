@@ -59,7 +59,7 @@ public class GetScenariosHandler {
   })
   @GetMapping("/{forecastRunId}/scenarios")
   public ResponseEntity<ApiResponse<List<ScenarioView>>> handle(
-      @Parameter(description = "예측 실행 ID", example = "4821") @PathVariable Long forecastRunId) {
+      @Parameter(description = "예측 실행 ID", example = "1") @PathVariable Long forecastRunId) {
     if (!forecastApi.forecastRunExists(forecastRunId)) {
       throw new BusinessException(ErrorCode.FORECAST_NOT_FOUND);
     }

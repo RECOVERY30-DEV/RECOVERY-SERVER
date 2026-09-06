@@ -57,7 +57,7 @@ public class PacketTransfersHandler {
   })
   @GetMapping("/{packetId}/transfers")
   public ResponseEntity<ApiResponse<List<PacketTransferView>>> list(
-      @Parameter(description = "Packet ID", example = "42") @PathVariable Long packetId) {
+      @Parameter(description = "Packet ID", example = "1") @PathVariable Long packetId) {
     if (!recoveryPacketRepository.existsById(packetId)) {
       throw new BusinessException(ErrorCode.PACKET_NOT_FOUND);
     }
@@ -87,7 +87,7 @@ public class PacketTransfersHandler {
   @PostMapping("/{packetId}/transfers")
   @Transactional
   public ResponseEntity<ApiResponse<PacketTransferView>> create(
-      @Parameter(description = "Packet ID", example = "42") @PathVariable Long packetId,
+      @Parameter(description = "Packet ID", example = "1") @PathVariable Long packetId,
       @RequestBody CreateTransferCommand command) {
     RecoveryPacket packet =
         recoveryPacketRepository

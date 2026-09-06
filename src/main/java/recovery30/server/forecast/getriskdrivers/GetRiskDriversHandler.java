@@ -60,7 +60,7 @@ public class GetRiskDriversHandler {
   })
   @GetMapping("/{forecastRunId}/risk-drivers")
   public ResponseEntity<ApiResponse<List<RiskDriverView>>> handle(
-      @Parameter(description = "예측 실행 ID", example = "4821") @PathVariable Long forecastRunId,
+      @Parameter(description = "예측 실행 ID", example = "1") @PathVariable Long forecastRunId,
       @Parameter(description = "상위 N건만 반환 (미지정 시 전체)", example = "3")
           @RequestParam(required = false)
           Integer limit,

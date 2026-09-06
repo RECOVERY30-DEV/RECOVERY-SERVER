@@ -44,7 +44,7 @@ public class GetMinBalanceHandler {
   })
   @GetMapping("/{forecastRunId}/min-balance")
   public ResponseEntity<ApiResponse<MinBalanceView>> handle(
-      @Parameter(description = "예측 실행 ID", example = "4821") @PathVariable Long forecastRunId) {
+      @Parameter(description = "예측 실행 ID", example = "1") @PathVariable Long forecastRunId) {
     ForecastRun run =
         forecastRunRepository
             .findById(forecastRunId)

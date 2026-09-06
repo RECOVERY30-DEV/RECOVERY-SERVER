@@ -11,7 +11,7 @@ import recovery30.server.forecast.domain.ForecastStatus;
  * min-balance / shortfall / safety-buffer 를 forecastRunId 기준으로 한 번에 받는 형태.
  */
 public record ForecastDetailView(
-    @Schema(description = "예측 실행 ID", example = "4821") Long forecastRunId,
+    @Schema(description = "예측 실행 ID", example = "1") Long forecastRunId,
     @Schema(description = "사업자 ID", example = "1") Long businessId,
     @Schema(description = "예측 기준일", example = "2025-06-14") LocalDate baseDate,
     @Schema(description = "예측 최종 갱신 시각(UTC)", example = "2025-06-13T23:32:00Z") Instant updatedAt,

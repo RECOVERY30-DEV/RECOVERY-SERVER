@@ -10,7 +10,7 @@ import recovery30.server.consultation.domain.ConsultationStatus;
 public record ConsultationView(
     @Schema(description = "상담 예약 ID", example = "8") Long consultationId,
     @Schema(description = "사업자 ID", example = "1") Long businessId,
-    @Schema(description = "연결된 Packet ID. nullable", example = "42") Long packetId,
+    @Schema(description = "연결된 Packet ID. nullable", example = "1") Long packetId,
     @Schema(description = "상담자 ID. nullable", example = "1") Long counselorId,
     @Schema(description = "상담자 이름. nullable", example = "김상담") String counselorName,
     @Schema(description = "상담 채널") ConsultationChannel channel,

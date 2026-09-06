@@ -16,5 +16,5 @@ public record BookConsultationCommand(
     @Schema(description = "사전 질문 (선택)") String preQuestion,
     @Schema(description = "상담원 정보 전송 동의 여부. 생략 시 false", example = "true")
         Boolean transferConsentGranted,
-    @Schema(description = "연결할 Recovery Packet ID (선택)", example = "42") Long packetId,
+    @Schema(description = "연결할 Recovery Packet ID (선택)", example = "1") Long packetId,
     @Schema(description = "상담에서 다룰 회복안 ID 목록", example = "[1, 3]") List<Long> recoveryOptionIds) {}
