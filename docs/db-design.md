@@ -74,6 +74,7 @@
 | **`V13__audit_and_governance_tables.sql`** | `audit_logs`, `audit_consent_logs`, `audit_ai_generations`, `audit_model_versions`, `audit_ruleset_versions`, `audit_holidays`, `audit_notifications` |
 | `V14__seed_reference_data.sql` | 레퍼런스 시드: 버전 마스터, `core_consent_types` 3건, 상담사 2명, 지원제도 3건 + 규칙/서류, 2025 공휴일 |
 | **`V15__slot_capacity_and_eligibility_check_items.sql`** | `recovery_counselor_slots` 정원 컬럼(`capacity`, `booked_count`) 추가 + `recovery_program_eligibility_check_items` 신규 (피그마 갭 ①②) |
+| `V16__seed_recovery_options.sql` | 회복안 카탈로그(`recovery_options`) 5건 레퍼런스 시드 (per-run 시나리오는 `@Profile("demo")` 시더) |
 
 ---
 
