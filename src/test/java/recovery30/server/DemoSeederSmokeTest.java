@@ -117,6 +117,29 @@ class DemoSeederSmokeTest {
   }
 
   @Test
+  void QA_RISK_일자별_현금흐름과_하루_상세가_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-RISK").orElseThrow();
+    String latest =
+        mockMvc
+            .perform(get("/api/businesses/{businessId}/forecasts/latest", businessId))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    long runId = objectMapper.readTree(latest).path("data").path("forecastRunId").asLong();
+
+    mockMvc
+        .perform(get("/api/forecasts/{runId}/daily", runId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(30))
+        .andExpect(jsonPath("$.data[0].targetDate").value("2025-07-15"));
+    mockMvc
+        .perform(get("/api/forecasts/{runId}/daily/{date}", runId, "2025-07-20"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.items.length()").value(4))
+        .andExpect(jsonPath("$.data.items[0].itemKind").value("CONFIRMED"));
+  }
+
+  @Test
   void QA_NEW_페르소나는_예측이_없어_404를_반환한다() throws Exception {
     long businessId = businessApi.findBusinessIdByRegNo("QA-NEW").orElseThrow();
 

@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import recovery30.server.business.api.BusinessApi;
 import recovery30.server.forecast.domain.ForecastCoverage;
+import recovery30.server.forecast.domain.ForecastDaily;
+import recovery30.server.forecast.domain.ForecastDailyItem;
 import recovery30.server.forecast.domain.ForecastRun;
 import recovery30.server.forecast.domain.ForecastRunNarrative;
 import recovery30.server.forecast.domain.RiskDriver;
@@ -45,6 +47,8 @@ public class DemoForecastSeeder implements ApplicationRunner {
   private final RiskDriverEvidenceRepository evidenceRepository;
   private final ForecastCoverageRepository coverageRepository;
   private final ForecastRunNarrativeRepository narrativeRepository;
+  private final ForecastDailyRepository dailyRepository;
+  private final ForecastDailyItemRepository dailyItemRepository;
 
   public DemoForecastSeeder(
       BusinessApi businessApi,
@@ -52,13 +56,17 @@ public class DemoForecastSeeder implements ApplicationRunner {
       ForecastRiskDriverRepository driverRepository,
       RiskDriverEvidenceRepository evidenceRepository,
       ForecastCoverageRepository coverageRepository,
-      ForecastRunNarrativeRepository narrativeRepository) {
+      ForecastRunNarrativeRepository narrativeRepository,
+      ForecastDailyRepository dailyRepository,
+      ForecastDailyItemRepository dailyItemRepository) {
     this.businessApi = businessApi;
     this.runRepository = runRepository;
     this.driverRepository = driverRepository;
     this.evidenceRepository = evidenceRepository;
     this.coverageRepository = coverageRepository;
     this.narrativeRepository = narrativeRepository;
+    this.dailyRepository = dailyRepository;
+    this.dailyItemRepository = dailyItemRepository;
   }
 
   @Override
@@ -118,7 +126,95 @@ public class DemoForecastSeeder implements ApplicationRunner {
     narrative(run.getId(), "STATUS_LABEL", 0, "주의 필요");
     narrative(run.getId(), "RISK_NOTE", 0, "부족일까지 11일 남았습니다.");
 
+    seedDaily(run.getId());
+
     log.info("[demo] QA-RISK forecastRunId={}", run.getId());
+  }
+
+  /** QA-RISK 30일 일자별 캘린더. 잔액이 D-11(2025-07-26)에 0 밑으로 내려간다. 07-20에 근거 라인 4건. */
+  private void seedDaily(long runId) {
+    LocalDate base = LocalDate.of(2025, 7, 15);
+    long opening = 2_000_000L;
+    for (int i = 0; i < 30; i++) {
+      LocalDate date = base.plusDays(i);
+      long confirmedInflow = 0L;
+      long confirmedOutflow = 0L;
+      long adjustmentNet = 0L;
+      long expectedInflowMax = 40_000L; // 잔잔한 일 매출 추정
+      if (i == 5) {
+        confirmedInflow = 680_000L;
+        adjustmentNet = 50_000L;
+      } else if (i == 7) {
+        confirmedOutflow = 950_000L; // 임차료
+      } else if (i == 10) {
+        confirmedOutflow = 380_000L; // 원리금
+      }
+      long expected =
+          opening
+              + confirmedInflow
+              - confirmedOutflow
+              + adjustmentNet
+              + 20_000L
+              - 200_000L; // 하루 순감소 추세
+      ForecastDaily d = new ForecastDaily();
+      d.setForecastRunId(runId);
+      d.setTargetDate(date);
+      d.setDDay(i);
+      d.setOpeningBalance(opening);
+      d.setConfirmedInflow(confirmedInflow);
+      d.setConfirmedOutflow(confirmedOutflow);
+      d.setExpectedInflowMin(0L);
+      d.setExpectedInflowMax(expectedInflowMax);
+      d.setExpectedOutflowMin(0L);
+      d.setExpectedOutflowMax(i == 5 ? 120_000L : 0L);
+      d.setAdjustmentNet(adjustmentNet);
+      d.setClosingBalanceConservative(expected - 300_000L);
+      d.setClosingBalanceExpected(expected);
+      d.setClosingBalanceOptimistic(expected + 200_000L);
+      d.setShortfall(expected < 0);
+      d.setHoliday(i == 3);
+      d.setHolidayShiftNote(i == 3 ? "7월 19일(토) 주말로 원리금 상환 기준일이 7월 18일(금)로 앞당겨졌습니다." : null);
+      d = dailyRepository.save(d);
+
+      if (i == 5) {
+        dailyItem(
+            d.getId(),
+            "CONFIRMED",
+            "카드 매출 정산",
+            "신한카드 · 전일 매출 확정",
+            "I",
+            680_000L,
+            680_000L,
+            "CARD_SETTLEMENT");
+        dailyItem(d.getId(), "EXPECTED", "현금 매출 추정", "최근 8주 평균 기반", "I", 420_000L, 710_000L, null);
+        dailyItem(
+            d.getId(), "EXPECTED", "공과금 예정", "반복 패턴 추정 · 격월 납부", "O", 120_000L, 120_000L, null);
+        dailyItem(
+            d.getId(), "ADJUSTMENT", "현금매출 추가 입력", "사용자 직접 입력 · 확정", "I", 50_000L, 50_000L, null);
+      }
+      opening = expected;
+    }
+  }
+
+  private void dailyItem(
+      long dailyId,
+      String kind,
+      String label,
+      String subLabel,
+      String direction,
+      long min,
+      long max,
+      String refType) {
+    ForecastDailyItem item = new ForecastDailyItem();
+    item.setForecastDailyId(dailyId);
+    item.setItemKind(kind);
+    item.setLabel(label);
+    item.setSubLabel(subLabel);
+    item.setDirection(direction);
+    item.setAmountMin(min);
+    item.setAmountMax(max);
+    item.setRefType(refType);
+    dailyItemRepository.save(item);
   }
 
   private void seedStable() {

@@ -51,4 +51,30 @@ public final class ForecastFixtures {
     c.setBelowThreshold(below);
     return c;
   }
+
+  public static recovery30.server.forecast.domain.ForecastDaily daily(
+      long forecastRunId, java.time.LocalDate date, int dDay, long closingExpected) {
+    var d = new recovery30.server.forecast.domain.ForecastDaily();
+    d.setForecastRunId(forecastRunId);
+    d.setTargetDate(date);
+    d.setDDay(dDay);
+    d.setOpeningBalance(1_000_000L);
+    d.setClosingBalanceConservative(closingExpected - 200_000L);
+    d.setClosingBalanceExpected(closingExpected);
+    d.setClosingBalanceOptimistic(closingExpected + 200_000L);
+    d.setShortfall(closingExpected < 0);
+    return d;
+  }
+
+  public static recovery30.server.forecast.domain.ForecastDailyItem dailyItem(
+      long forecastDailyId, String kind, String direction, long amount) {
+    var i = new recovery30.server.forecast.domain.ForecastDailyItem();
+    i.setForecastDailyId(forecastDailyId);
+    i.setItemKind(kind);
+    i.setLabel(kind + " 항목");
+    i.setDirection(direction);
+    i.setAmountMin(amount);
+    i.setAmountMax(amount);
+    return i;
+  }
 }

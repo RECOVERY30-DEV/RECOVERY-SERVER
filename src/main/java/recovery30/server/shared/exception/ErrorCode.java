@@ -15,6 +15,7 @@ public enum ErrorCode {
   MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_404", "존재하지 않는 회원입니다"),
 
   FORECAST_NOT_FOUND(HttpStatus.NOT_FOUND, "FORECAST_404_1", "예측 이력이 없습니다"),
+  FORECAST_DAILY_NOT_FOUND(HttpStatus.NOT_FOUND, "FORECAST_404_2", "해당 날짜의 예측 상세가 없습니다"),
 
   RECOVERY_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "RECOVERY_404_1", "존재하지 않는 회복안입니다"),
   RECOVERY_OPTION_SELECTION_LIMIT(
