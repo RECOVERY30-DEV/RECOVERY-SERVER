@@ -233,6 +233,36 @@ class DemoSeederSmokeTest {
   }
 
   @Test
+  void QA_RISK_사후점검_일정_결과_실행상태가_시더로_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-RISK").orElseThrow();
+
+    String followups =
+        mockMvc
+            .perform(get("/api/businesses/{businessId}/followups", businessId))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.length()").value(3))
+            .andExpect(jsonPath("$.data[0].checkpoint").value("D30"))
+            .andExpect(jsonPath("$.data[0].hasResult").value(true))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    long d30Id = objectMapper.readTree(followups).path("data").get(0).path("id").asLong();
+
+    mockMvc
+        .perform(get("/api/followups/{scheduleId}/result", d30Id))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.balanceRecovered").value("PARTIAL"))
+        .andExpect(jsonPath("$.data.riskStatus").value("STABLE"));
+
+    mockMvc
+        .perform(get("/api/businesses/{businessId}/recovery-execution-status", businessId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(2))
+        .andExpect(jsonPath("$.data[1].status").value("BLOCKED"))
+        .andExpect(jsonPath("$.data[1].blockerText").exists());
+  }
+
+  @Test
   void QA_NEW_페르소나는_예측이_없어_404를_반환한다() throws Exception {
     long businessId = businessApi.findBusinessIdByRegNo("QA-NEW").orElseThrow();
 
