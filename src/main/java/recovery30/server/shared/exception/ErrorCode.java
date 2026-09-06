@@ -11,7 +11,11 @@ public enum ErrorCode {
   INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "MEMBER_400_2", "닉네임은 비어있을 수 없습니다"),
   MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_404", "존재하지 않는 회원입니다"),
 
-  FORECAST_NOT_FOUND(HttpStatus.NOT_FOUND, "FORECAST_404_1", "예측 이력이 없습니다");
+  FORECAST_NOT_FOUND(HttpStatus.NOT_FOUND, "FORECAST_404_1", "예측 이력이 없습니다"),
+
+  RECOVERY_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "RECOVERY_404_1", "존재하지 않는 회복안입니다"),
+  RECOVERY_OPTION_SELECTION_LIMIT(
+      HttpStatus.BAD_REQUEST, "RECOVERY_400_1", "회복안은 최대 2개까지 선택할 수 있습니다");
 
   private final HttpStatus status;
   private final String code;
