@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import recovery30.server.business.domain.Business;
 import recovery30.server.business.domain.Consent;
+import recovery30.server.business.domain.ConsentType;
 import recovery30.server.business.domain.User;
 
 /**
@@ -35,19 +36,24 @@ public class DemoBusinessSeeder implements ApplicationRunner {
   private final UserRepository userRepository;
   private final BusinessRepository businessRepository;
   private final ConsentRepository consentRepository;
+  private final ConsentTypeRepository consentTypeRepository;
 
   public DemoBusinessSeeder(
       UserRepository userRepository,
       BusinessRepository businessRepository,
-      ConsentRepository consentRepository) {
+      ConsentRepository consentRepository,
+      ConsentTypeRepository consentTypeRepository) {
     this.userRepository = userRepository;
     this.businessRepository = businessRepository;
     this.consentRepository = consentRepository;
+    this.consentTypeRepository = consentTypeRepository;
   }
 
   @Override
   @Transactional
   public void run(ApplicationArguments args) {
+    seedConsentTypesIfEmpty();
+
     if (businessRepository.findByBizRegNo("QA-RISK").isPresent()) {
       log.info("[demo] 사업자 페르소나가 이미 있어 시딩을 건너뜁니다");
       return;
@@ -65,6 +71,56 @@ public class DemoBusinessSeeder implements ApplicationRunner {
         stable,
         hold,
         fresh);
+  }
+
+  /** core_consent_types 는 Flyway V14 가 모든 환경에 적재. Flyway 가 없는 테스트 환경을 위해 비어 있으면 동일 3건을 채운다. */
+  private void seedConsentTypesIfEmpty() {
+    if (consentTypeRepository.count() > 0) {
+      return;
+    }
+    consentTypeRepository.save(
+        consentType(
+            "ANALYSIS",
+            "서비스 분석 동의",
+            true,
+            "30일 현금흐름 예측 및 부족 원인 분석에 사업자 거래 데이터를 활용합니다.",
+            "사업자 거래 내역, 보정값, 예측 결과",
+            "철회 시 30일 현금흐름 분석을 포함한 모든 서비스 이용이 중단됩니다."));
+    consentTypeRepository.save(
+        consentType(
+            "PACKET_TRANSFER",
+            "상담원 전송 동의",
+            false,
+            "상담 예약 시 Recovery Packet을 상담원에게 사전 전송합니다.",
+            "Recovery Packet (위험 Snapshot, 원인, 선택안, 질문, 준비서류)",
+            "철회해도 상담 예약은 유지되나 Packet이 전송되지 않습니다."));
+    consentTypeRepository.save(
+        consentType(
+            "FOLLOWUP_TRACKING",
+            "30·60·90일 사후 점검 동의",
+            false,
+            "실행 결과와 잔액 회복 여부를 확인해 추천을 개선합니다.",
+            "실행 결과, 잔액 회복 여부, 연체 발생 여부",
+            "미동의 시 추적 알림을 받지 않으며 분석 이용에는 영향을 주지 않습니다."));
+    log.info("[demo] core_consent_types 3건 시딩 (Flyway V14 미적용 환경)");
+  }
+
+  private static ConsentType consentType(
+      String code,
+      String name,
+      boolean required,
+      String purpose,
+      String dataScope,
+      String withdrawEffect) {
+    ConsentType t = new ConsentType();
+    t.setCode(code);
+    t.setName(name);
+    t.setRequired(required);
+    t.setPurpose(purpose);
+    t.setDataScope(dataScope);
+    t.setWithdrawEffect(withdrawEffect);
+    t.setVersion("v1.0");
+    return t;
   }
 
   private long persona(String bizRegNo, String email, String bizName, boolean withConsent) {
