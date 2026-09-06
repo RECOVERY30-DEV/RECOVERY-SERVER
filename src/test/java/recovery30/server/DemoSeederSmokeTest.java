@@ -136,6 +136,19 @@ class DemoSeederSmokeTest {
   }
 
   @Test
+  void QA_RISK_연동_데이터_소스_현황이_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-RISK").orElseThrow();
+
+    mockMvc
+        .perform(get("/api/businesses/{businessId}/data-sources", businessId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(4))
+        .andExpect(jsonPath("$.data[0].sourceType").value("BANK_ACCOUNT"))
+        .andExpect(jsonPath("$.data[3].sourceType").value("AUTO_TRANSFER"))
+        .andExpect(jsonPath("$.data[3].belowThreshold").value(true));
+  }
+
+  @Test
   void QA_NEW_페르소나는_예측이_없어_404를_반환한다() throws Exception {
     long businessId = businessApi.findBusinessIdByRegNo("QA-NEW").orElseThrow();
 
