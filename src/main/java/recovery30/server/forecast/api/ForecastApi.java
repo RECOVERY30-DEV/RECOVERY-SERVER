@@ -13,4 +13,7 @@ public interface ForecastApi {
 
   /** 사업자의 가장 최근 예측 실행 id. */
   Optional<Long> findLatestForecastRunId(Long businessId);
+
+  /** 예측 실행의 소유 사업자 id. */
+  Optional<Long> findBusinessId(Long forecastRunId);
 }
