@@ -2,6 +2,7 @@ package recovery30.server.recoveryoption.internal;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import recovery30.server.recoveryoption.domain.RecoveryOption;
 
@@ -11,4 +12,6 @@ public interface RecoveryOptionRepository extends JpaRepository<RecoveryOption, 
   List<RecoveryOption> findAllByOrderByIdAsc();
 
   long countByIdIn(Collection<Long> ids);
+
+  Optional<RecoveryOption> findByOptionCode(String optionCode);
 }
