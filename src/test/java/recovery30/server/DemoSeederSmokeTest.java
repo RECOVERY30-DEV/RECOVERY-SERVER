@@ -83,6 +83,19 @@ class DemoSeederSmokeTest {
   }
 
   @Test
+  void QA_RISK_Recovery_Packet_v1이_시더로_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-RISK").orElseThrow();
+
+    mockMvc
+        .perform(get("/api/businesses/{businessId}/packets/latest", businessId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.version").value(1))
+        .andExpect(jsonPath("$.data.status").value("DRAFT"))
+        .andExpect(jsonPath("$.data.snapshot.causes.length()").value(3))
+        .andExpect(jsonPath("$.data.snapshot.selectedOptions[0].nextAction").exists());
+  }
+
+  @Test
   void QA_NEW_페르소나는_예측이_없어_404를_반환한다() throws Exception {
     long businessId = businessApi.findBusinessIdByRegNo("QA-NEW").orElseThrow();
 

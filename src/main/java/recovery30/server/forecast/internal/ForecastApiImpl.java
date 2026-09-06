@@ -26,4 +26,9 @@ public class ForecastApiImpl implements ForecastApi {
         .findTopByBusinessIdOrderByBaseDateDescCreatedAtDesc(businessId)
         .map(ForecastRun::getId);
   }
+
+  @Override
+  public Optional<Long> findBusinessId(Long forecastRunId) {
+    return forecastRunRepository.findById(forecastRunId).map(ForecastRun::getBusinessId);
+  }
 }
