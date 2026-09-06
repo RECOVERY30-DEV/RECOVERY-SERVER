@@ -37,7 +37,10 @@ public enum ErrorCode {
   ADJUSTMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "ADJUSTMENT_404_1", "존재하지 않는 보정값입니다"),
   ADJUSTMENT_SUGGESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "ADJUSTMENT_404_2", "존재하지 않는 추정 후보입니다"),
   ADJUSTMENT_SUGGESTION_ALREADY_HANDLED(
-      HttpStatus.BAD_REQUEST, "ADJUSTMENT_400_1", "이미 처리된 추정 후보입니다");
+      HttpStatus.BAD_REQUEST, "ADJUSTMENT_400_1", "이미 처리된 추정 후보입니다"),
+
+  FOLLOWUP_NOT_FOUND(HttpStatus.NOT_FOUND, "FOLLOWUP_404_1", "존재하지 않는 사후 점검 일정입니다"),
+  FOLLOWUP_RESULT_NOT_FOUND(HttpStatus.NOT_FOUND, "FOLLOWUP_404_2", "아직 기록된 사후 점검 결과가 없습니다");
 
   private final HttpStatus status;
   private final String code;
