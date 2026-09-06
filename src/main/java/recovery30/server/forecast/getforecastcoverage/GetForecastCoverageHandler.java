@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import recovery30.server.forecast.domain.CoverageSourceType;
+import recovery30.server.forecast.domain.CoverageStatus;
 import recovery30.server.forecast.internal.ForecastCoverageRepository;
 import recovery30.server.forecast.internal.ForecastRunRepository;
 import recovery30.server.shared.exception.BusinessException;
@@ -58,8 +60,8 @@ public class GetForecastCoverageHandler {
             .map(
                 c ->
                     new CoverageView(
-                        c.getSourceType(),
-                        c.isBelowThreshold() ? "PARTIAL" : "COMPLETE",
+                        CoverageSourceType.valueOf(c.getSourceType()),
+                        CoverageStatus.of(c.isBelowThreshold()),
                         c.getCoverageRate(),
                         c.getLastSyncedAt(),
                         c.isBelowThreshold()))

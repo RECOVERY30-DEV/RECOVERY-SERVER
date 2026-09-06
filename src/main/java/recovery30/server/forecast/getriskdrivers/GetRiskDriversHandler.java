@@ -92,6 +92,8 @@ public class GetRiskDriversHandler {
                         d.getMetricText(),
                         d.getContributionAmount(),
                         d.isEstimating(),
+                        d.getDescription(),
+                        d.getAssumptionText(),
                         withEvidence ? evidenceByDriver.getOrDefault(d.getId(), List.of()) : null))
             .toList();
     return ResponseEntity.ok(ApiResponse.success(views));
