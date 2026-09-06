@@ -64,7 +64,7 @@ public class PutOptionSelectionsHandler {
   @PutMapping("/{forecastRunId}/option-selections")
   @Transactional
   public ResponseEntity<ApiResponse<OptionSelectionsView>> handle(
-      @Parameter(description = "예측 실행 ID", example = "4821") @PathVariable Long forecastRunId,
+      @Parameter(description = "예측 실행 ID", example = "1") @PathVariable Long forecastRunId,
       @RequestBody PutOptionSelectionsCommand command) {
     List<Long> optionIds =
         command.optionIds() == null

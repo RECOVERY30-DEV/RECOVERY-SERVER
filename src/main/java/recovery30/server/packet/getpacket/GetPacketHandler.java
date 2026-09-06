@@ -46,7 +46,7 @@ public class GetPacketHandler {
   })
   @GetMapping("/{packetId}")
   public ResponseEntity<ApiResponse<PacketView>> handle(
-      @Parameter(description = "Packet ID", example = "42") @PathVariable Long packetId) {
+      @Parameter(description = "Packet ID", example = "1") @PathVariable Long packetId) {
     RecoveryPacket packet =
         recoveryPacketRepository
             .findById(packetId)

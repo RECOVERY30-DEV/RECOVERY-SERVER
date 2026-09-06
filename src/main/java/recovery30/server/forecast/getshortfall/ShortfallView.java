@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 /** 홈 화면 "첫 부족 예상일" 박스. "D-11" 표기·게이지 비율({@code dDay / horizonDays})·날짜 포맷은 클라이언트가 만든다. */
 public record ShortfallView(
-    @Schema(description = "예측 실행 ID", example = "4821") Long forecastRunId,
+    @Schema(description = "예측 실행 ID", example = "1") Long forecastRunId,
     @Schema(description = "30일 내 부족 발생 여부. false면 나머지 값 null", example = "true")
         boolean hasShortfall,
     @Schema(description = "부족 발생일까지 남은 일수", example = "11") Integer dDay,

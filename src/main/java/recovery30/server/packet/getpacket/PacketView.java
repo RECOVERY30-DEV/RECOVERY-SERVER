@@ -12,9 +12,9 @@ import tools.jackson.databind.ObjectMapper;
  * 파싱해 렌더한다.
  */
 public record PacketView(
-    @Schema(description = "Packet ID", example = "42") Long packetId,
+    @Schema(description = "Packet ID", example = "1") Long packetId,
     @Schema(description = "사업자 ID", example = "1") Long businessId,
-    @Schema(description = "예측 실행 ID", example = "4821") Long forecastRunId,
+    @Schema(description = "예측 실행 ID", example = "1") Long forecastRunId,
     @Schema(description = "버전 (1부터). 수정 시 새 버전 생성", example = "2") Integer version,
     @Schema(description = "이전 버전 Packet ID. v1이면 null", example = "41") Long supersedesPacketId,
     @Schema(description = "상태") PacketStatus status,

@@ -9,6 +9,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * 스냅샷 컬럼을 추가한다 (docs 결정사항 참고).
  */
 public record SafetyBufferView(
-    @Schema(description = "예측 실행 ID", example = "4821") Long forecastRunId,
+    @Schema(description = "예측 실행 ID", example = "1") Long forecastRunId,
     @Schema(description = "안전 잔액(원)", example = "830000") Long amount,
     @Schema(description = "Safety Buffer 충족 여부", example = "true") boolean bufferMet) {}

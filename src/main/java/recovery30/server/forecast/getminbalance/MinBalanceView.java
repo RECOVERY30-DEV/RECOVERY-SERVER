@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * optimistic}, 마커 = {@code (expected - conservative) / (optimistic - conservative)}.
  */
 public record MinBalanceView(
-    @Schema(description = "예측 실행 ID", example = "4821") Long forecastRunId,
+    @Schema(description = "예측 실행 ID", example = "1") Long forecastRunId,
     @Schema(description = "밴드 산출 가능 여부. false면 HOLD(판단보류)라 세 값이 모두 null", example = "true")
         boolean available,
     @Schema(description = "보수적 시나리오 최저잔액(원)", example = "-1280000") Long conservative,

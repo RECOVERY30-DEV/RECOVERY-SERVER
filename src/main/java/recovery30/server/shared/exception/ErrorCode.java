@@ -19,7 +19,12 @@ public enum ErrorCode {
 
   SUPPORT_PROGRAM_NOT_FOUND(HttpStatus.NOT_FOUND, "SUPPORT_404_1", "존재하지 않는 지원제도입니다"),
 
-  PACKET_NOT_FOUND(HttpStatus.NOT_FOUND, "PACKET_404_1", "존재하지 않는 Recovery Packet입니다");
+  PACKET_NOT_FOUND(HttpStatus.NOT_FOUND, "PACKET_404_1", "존재하지 않는 Recovery Packet입니다"),
+
+  CONSULTATION_NOT_FOUND(HttpStatus.NOT_FOUND, "CONSULTATION_404_1", "존재하지 않는 상담 예약입니다"),
+  COUNSELOR_NOT_FOUND(HttpStatus.NOT_FOUND, "CONSULTATION_404_2", "존재하지 않는 상담자입니다"),
+  INVALID_CONSULTATION_CHANNEL(HttpStatus.BAD_REQUEST, "CONSULTATION_400_1", "지원하지 않는 상담 채널입니다"),
+  SLOT_NOT_BOOKABLE(HttpStatus.BAD_REQUEST, "CONSULTATION_400_2", "예약 가능한 슬롯이 아닙니다");
 
   private final HttpStatus status;
   private final String code;

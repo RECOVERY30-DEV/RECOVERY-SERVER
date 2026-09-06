@@ -65,7 +65,7 @@ public class CreatePacketHandler {
   @PostMapping("/{forecastRunId}/packets")
   @Transactional
   public ResponseEntity<ApiResponse<CreatedPacketView>> handle(
-      @Parameter(description = "예측 실행 ID", example = "4821") @PathVariable Long forecastRunId,
+      @Parameter(description = "예측 실행 ID", example = "1") @PathVariable Long forecastRunId,
       @RequestBody CreatePacketCommand command) {
     if (command.snapshot() == null || command.snapshot().isNull()) {
       throw new BusinessException(ErrorCode.INVALID_INPUT);
