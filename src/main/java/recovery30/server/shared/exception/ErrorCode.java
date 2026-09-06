@@ -17,6 +17,7 @@ public enum ErrorCode {
   FORECAST_NOT_FOUND(HttpStatus.NOT_FOUND, "FORECAST_404_1", "예측 이력이 없습니다"),
 
   RECOVERY_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "RECOVERY_404_1", "존재하지 않는 회복안입니다"),
+  SELF_ACTION_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "RECOVERY_404_2", "존재하지 않는 자체 실행 준비 항목입니다"),
   RECOVERY_OPTION_SELECTION_LIMIT(
       HttpStatus.BAD_REQUEST, "RECOVERY_400_1", "회복안은 최대 2개까지 선택할 수 있습니다"),
 

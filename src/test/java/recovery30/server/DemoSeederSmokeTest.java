@@ -117,6 +117,27 @@ class DemoSeederSmokeTest {
   }
 
   @Test
+  void QA_RISK_자체_실행_계획이_시더로_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-RISK").orElseThrow();
+    String latest =
+        mockMvc
+            .perform(get("/api/businesses/{businessId}/forecasts/latest", businessId))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    long runId = objectMapper.readTree(latest).path("data").path("forecastRunId").asLong();
+
+    mockMvc
+        .perform(get("/api/forecasts/{runId}/self-action-plans", runId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(1))
+        .andExpect(jsonPath("$.data[0].status").value("ACTIVE"))
+        .andExpect(jsonPath("$.data[0].items.length()").value(3))
+        .andExpect(jsonPath("$.data[0].items[0].status").value("DONE"))
+        .andExpect(jsonPath("$.data[0].items[1].status").value("PENDING"));
+  }
+
+  @Test
   void QA_NEW_페르소나는_예측이_없어_404를_반환한다() throws Exception {
     long businessId = businessApi.findBusinessIdByRegNo("QA-NEW").orElseThrow();
 
