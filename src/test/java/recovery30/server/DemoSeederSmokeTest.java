@@ -96,6 +96,27 @@ class DemoSeederSmokeTest {
   }
 
   @Test
+  void 상담자와_슬롯이_시더로_조회되고_잔여석이_계산된다() throws Exception {
+    String body =
+        mockMvc
+            .perform(get("/api/counselors"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.length()").value(2))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    long counselorId = objectMapper.readTree(body).path("data").get(0).path("counselorId").asLong();
+
+    mockMvc
+        .perform(get("/api/counselors/{counselorId}/slots", counselorId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(3))
+        .andExpect(jsonPath("$.data[0].remainingSeats").value(2))
+        .andExpect(jsonPath("$.data[1].remainingSeats").value(3))
+        .andExpect(jsonPath("$.data[2].remainingSeats").value(1));
+  }
+
+  @Test
   void QA_NEW_페르소나는_예측이_없어_404를_반환한다() throws Exception {
     long businessId = businessApi.findBusinessIdByRegNo("QA-NEW").orElseThrow();
 

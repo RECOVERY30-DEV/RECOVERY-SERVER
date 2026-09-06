@@ -11,6 +11,9 @@ public interface BusinessApi {
   /** 사업자등록번호로 business_id 조회. */
   Optional<Long> findBusinessIdByRegNo(String bizRegNo);
 
+  /** 해당 사업자가 존재하는지. */
+  boolean businessExists(Long businessId);
+
   /** 해당 사업자의 GRANTED 상태 동의 id 조회 (consent_type_code 예: "ANALYSIS"). */
   Optional<Long> findGrantedConsentId(Long businessId, String consentTypeCode);
 }

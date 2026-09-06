@@ -25,6 +25,11 @@ public class BusinessApiImpl implements BusinessApi {
   }
 
   @Override
+  public boolean businessExists(Long businessId) {
+    return businessId != null && businessRepository.existsById(businessId);
+  }
+
+  @Override
   public Optional<Long> findGrantedConsentId(Long businessId, String consentTypeCode) {
     return consentRepository
         .findByBusinessIdAndConsentTypeCode(businessId, consentTypeCode)
