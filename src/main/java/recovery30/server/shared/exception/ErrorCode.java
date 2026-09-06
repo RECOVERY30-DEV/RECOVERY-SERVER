@@ -15,7 +15,9 @@ public enum ErrorCode {
 
   RECOVERY_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "RECOVERY_404_1", "존재하지 않는 회복안입니다"),
   RECOVERY_OPTION_SELECTION_LIMIT(
-      HttpStatus.BAD_REQUEST, "RECOVERY_400_1", "회복안은 최대 2개까지 선택할 수 있습니다");
+      HttpStatus.BAD_REQUEST, "RECOVERY_400_1", "회복안은 최대 2개까지 선택할 수 있습니다"),
+
+  SUPPORT_PROGRAM_NOT_FOUND(HttpStatus.NOT_FOUND, "SUPPORT_404_1", "존재하지 않는 지원제도입니다");
 
   private final HttpStatus status;
   private final String code;
