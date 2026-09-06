@@ -30,7 +30,12 @@ public enum ErrorCode {
   SLOT_NOT_BOOKABLE(HttpStatus.BAD_REQUEST, "CONSULTATION_400_2", "예약 가능한 슬롯이 아닙니다"),
 
   BUSINESS_NOT_FOUND(HttpStatus.NOT_FOUND, "BUSINESS_404_1", "존재하지 않는 사업자입니다"),
-  CONSENT_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "CONSENT_404_1", "존재하지 않는 동의 항목입니다");
+  CONSENT_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "CONSENT_404_1", "존재하지 않는 동의 항목입니다"),
+
+  ADJUSTMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "ADJUSTMENT_404_1", "존재하지 않는 보정값입니다"),
+  ADJUSTMENT_SUGGESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "ADJUSTMENT_404_2", "존재하지 않는 추정 후보입니다"),
+  ADJUSTMENT_SUGGESTION_ALREADY_HANDLED(
+      HttpStatus.BAD_REQUEST, "ADJUSTMENT_400_1", "이미 처리된 추정 후보입니다");
 
   private final HttpStatus status;
   private final String code;

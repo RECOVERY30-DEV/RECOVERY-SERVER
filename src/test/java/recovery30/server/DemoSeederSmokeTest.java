@@ -149,6 +149,22 @@ class DemoSeederSmokeTest {
   }
 
   @Test
+  void QA_RISK_보정값과_추정후보가_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-RISK").orElseThrow();
+
+    mockMvc
+        .perform(get("/api/businesses/{businessId}/adjustments", businessId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(2))
+        .andExpect(jsonPath("$.data[0].status").value("SAVED"));
+    mockMvc
+        .perform(get("/api/businesses/{businessId}/adjustment-suggestions", businessId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(2))
+        .andExpect(jsonPath("$.data[0].status").value("PROPOSED"));
+  }
+
+  @Test
   void QA_NEW_페르소나는_예측이_없어_404를_반환한다() throws Exception {
     long businessId = businessApi.findBusinessIdByRegNo("QA-NEW").orElseThrow();
 
