@@ -134,6 +134,17 @@ WHERE c.id IS NOT NULL
     SELECT 1 FROM recovery_counselor_slots x WHERE x.counselor_id = c.id AND x.start_at = s.start_at
   );
 
+-- 6) 지원제도 마감일을 미래로 (V14 시드가 2025년이라 applicableOnly 필터에 다 걸러짐) --
+UPDATE recovery_support_programs
+SET apply_deadline = DATE_ADD(CURRENT_DATE, INTERVAL 60 DAY)
+WHERE program_code = 'SBIZ_STABLE_FUND' AND apply_deadline < CURRENT_DATE;
+UPDATE recovery_support_programs
+SET apply_deadline = DATE_ADD(CURRENT_DATE, INTERVAL 90 DAY)
+WHERE program_code = 'SBIZ_119PLUS' AND apply_deadline < CURRENT_DATE;
+UPDATE recovery_support_programs
+SET apply_deadline = DATE_ADD(CURRENT_DATE, INTERVAL 120 DAY)
+WHERE program_code = 'SUNSHINE_119' AND apply_deadline < CURRENT_DATE;
+
 COMMIT;
 
 -- 확인용 출력
