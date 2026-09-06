@@ -15,6 +15,7 @@ public enum ErrorCode {
   MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_404", "존재하지 않는 회원입니다"),
 
   FORECAST_NOT_FOUND(HttpStatus.NOT_FOUND, "FORECAST_404_1", "예측 이력이 없습니다"),
+  FORECAST_DAILY_NOT_FOUND(HttpStatus.NOT_FOUND, "FORECAST_404_2", "해당 날짜의 예측 상세가 없습니다"),
 
   RECOVERY_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "RECOVERY_404_1", "존재하지 않는 회복안입니다"),
   SELF_ACTION_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "RECOVERY_404_2", "존재하지 않는 자체 실행 준비 항목입니다"),
@@ -28,7 +29,15 @@ public enum ErrorCode {
   CONSULTATION_NOT_FOUND(HttpStatus.NOT_FOUND, "CONSULTATION_404_1", "존재하지 않는 상담 예약입니다"),
   COUNSELOR_NOT_FOUND(HttpStatus.NOT_FOUND, "CONSULTATION_404_2", "존재하지 않는 상담자입니다"),
   INVALID_CONSULTATION_CHANNEL(HttpStatus.BAD_REQUEST, "CONSULTATION_400_1", "지원하지 않는 상담 채널입니다"),
-  SLOT_NOT_BOOKABLE(HttpStatus.BAD_REQUEST, "CONSULTATION_400_2", "예약 가능한 슬롯이 아닙니다");
+  SLOT_NOT_BOOKABLE(HttpStatus.BAD_REQUEST, "CONSULTATION_400_2", "예약 가능한 슬롯이 아닙니다"),
+
+  BUSINESS_NOT_FOUND(HttpStatus.NOT_FOUND, "BUSINESS_404_1", "존재하지 않는 사업자입니다"),
+  CONSENT_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "CONSENT_404_1", "존재하지 않는 동의 항목입니다"),
+
+  ADJUSTMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "ADJUSTMENT_404_1", "존재하지 않는 보정값입니다"),
+  ADJUSTMENT_SUGGESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "ADJUSTMENT_404_2", "존재하지 않는 추정 후보입니다"),
+  ADJUSTMENT_SUGGESTION_ALREADY_HANDLED(
+      HttpStatus.BAD_REQUEST, "ADJUSTMENT_400_1", "이미 처리된 추정 후보입니다");
 
   private final HttpStatus status;
   private final String code;

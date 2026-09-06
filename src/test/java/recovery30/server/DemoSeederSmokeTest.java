@@ -96,6 +96,25 @@ class DemoSeederSmokeTest {
   }
 
   @Test
+  void 동의_항목_마스터와_사업자_동의_상태가_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-RISK").orElseThrow();
+
+    mockMvc
+        .perform(get("/api/consent-types"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(3))
+        .andExpect(jsonPath("$.data[0].code").value("ANALYSIS"))
+        .andExpect(jsonPath("$.data[0].required").value(true));
+
+    mockMvc
+        .perform(get("/api/businesses/{businessId}/consents", businessId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(3))
+        .andExpect(jsonPath("$.data[0].typeCode").value("ANALYSIS"))
+        .andExpect(jsonPath("$.data[0].status").value("GRANTED"));
+  }
+
+  @Test
   void 상담자와_슬롯이_시더로_조회되고_잔여석이_계산된다() throws Exception {
     String body =
         mockMvc
@@ -114,6 +133,82 @@ class DemoSeederSmokeTest {
         .andExpect(jsonPath("$.data[0].remainingSeats").value(2))
         .andExpect(jsonPath("$.data[1].remainingSeats").value(3))
         .andExpect(jsonPath("$.data[2].remainingSeats").value(1));
+  }
+
+  @Test
+  void QA_RISK_연동_데이터_소스_현황이_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-RISK").orElseThrow();
+
+    mockMvc
+        .perform(get("/api/businesses/{businessId}/data-sources", businessId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(4))
+        .andExpect(jsonPath("$.data[0].sourceType").value("BANK_ACCOUNT"))
+        .andExpect(jsonPath("$.data[3].sourceType").value("AUTO_TRANSFER"))
+        .andExpect(jsonPath("$.data[3].belowThreshold").value(true));
+  }
+
+  @Test
+  void QA_RISK_보정값과_추정후보가_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-RISK").orElseThrow();
+
+    mockMvc
+        .perform(get("/api/businesses/{businessId}/adjustments", businessId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(2))
+        .andExpect(jsonPath("$.data[0].status").value("SAVED"));
+    mockMvc
+        .perform(get("/api/businesses/{businessId}/adjustment-suggestions", businessId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(2))
+        .andExpect(jsonPath("$.data[0].status").value("PROPOSED"));
+  }
+
+  @Test
+  void QA_RISK_일자별_현금흐름과_하루_상세가_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-RISK").orElseThrow();
+    String latest =
+        mockMvc
+            .perform(get("/api/businesses/{businessId}/forecasts/latest", businessId))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    long runId = objectMapper.readTree(latest).path("data").path("forecastRunId").asLong();
+
+    mockMvc
+        .perform(get("/api/forecasts/{runId}/daily", runId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(30))
+        .andExpect(jsonPath("$.data[0].targetDate").value("2025-07-15"));
+    mockMvc
+        .perform(get("/api/forecasts/{runId}/daily/{date}", runId, "2025-07-20"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.items.length()").value(4))
+        .andExpect(jsonPath("$.data.items[0].itemKind").value("CONFIRMED"));
+  }
+
+  @Test
+  void QA_STABLE_안정_상태_서술_문구가_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-STABLE").orElseThrow();
+    String latest =
+        mockMvc
+            .perform(get("/api/businesses/{businessId}/forecasts/latest", businessId))
+            .andExpect(jsonPath("$.data.status").value("STABLE"))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    long runId = objectMapper.readTree(latest).path("data").path("forecastRunId").asLong();
+
+    mockMvc
+        .perform(get("/api/forecasts/{runId}/narratives", runId).param("kind", "STABLE_REASON"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(2));
+    mockMvc
+        .perform(get("/api/forecasts/{runId}/narratives", runId))
+        .andExpect(status().isOk())
+        .andExpect(
+            jsonPath("$.data[?(@.kind=='STATUS_LABEL')].text")
+                .value(org.hamcrest.Matchers.hasItem("안전")));
   }
 
   @Test

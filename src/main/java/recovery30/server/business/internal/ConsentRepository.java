@@ -1,5 +1,6 @@
 package recovery30.server.business.internal;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import recovery30.server.business.domain.Consent;
@@ -8,4 +9,6 @@ import recovery30.server.business.domain.Consent;
 public interface ConsentRepository extends JpaRepository<Consent, Long> {
 
   Optional<Consent> findByBusinessIdAndConsentTypeCode(Long businessId, String consentTypeCode);
+
+  List<Consent> findByBusinessId(Long businessId);
 }
