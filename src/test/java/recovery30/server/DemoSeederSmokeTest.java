@@ -58,6 +58,31 @@ class DemoSeederSmokeTest {
   }
 
   @Test
+  void QA_RISK_회복안_비교_API가_시더_데이터로_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-RISK").orElseThrow();
+    String latest =
+        mockMvc
+            .perform(get("/api/businesses/{businessId}/forecasts/latest", businessId))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    long runId = objectMapper.readTree(latest).path("data").path("forecastRunId").asLong();
+
+    mockMvc
+        .perform(get("/api/forecasts/{runId}/recovery-options", runId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(5))
+        .andExpect(jsonPath("$.data[0].selected").value(false));
+    mockMvc
+        .perform(get("/api/forecasts/{runId}/scenarios", runId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(3))
+        .andExpect(jsonPath("$.data[0].scenarioType").value("BASELINE"))
+        .andExpect(jsonPath("$.data[1].scenarioType").value("SIMULATED"))
+        .andExpect(jsonPath("$.data[1].appliedOptionIds.length()").value(1));
+  }
+
+  @Test
   void QA_NEW_페르소나는_예측이_없어_404를_반환한다() throws Exception {
     long businessId = businessApi.findBusinessIdByRegNo("QA-NEW").orElseThrow();
 
