@@ -96,6 +96,25 @@ class DemoSeederSmokeTest {
   }
 
   @Test
+  void 동의_항목_마스터와_사업자_동의_상태가_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-RISK").orElseThrow();
+
+    mockMvc
+        .perform(get("/api/consent-types"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(3))
+        .andExpect(jsonPath("$.data[0].code").value("ANALYSIS"))
+        .andExpect(jsonPath("$.data[0].required").value(true));
+
+    mockMvc
+        .perform(get("/api/businesses/{businessId}/consents", businessId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(3))
+        .andExpect(jsonPath("$.data[0].typeCode").value("ANALYSIS"))
+        .andExpect(jsonPath("$.data[0].status").value("GRANTED"));
+  }
+
+  @Test
   void 상담자와_슬롯이_시더로_조회되고_잔여석이_계산된다() throws Exception {
     String body =
         mockMvc
