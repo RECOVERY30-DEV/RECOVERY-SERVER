@@ -188,6 +188,30 @@ class DemoSeederSmokeTest {
   }
 
   @Test
+  void QA_STABLE_안정_상태_서술_문구가_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-STABLE").orElseThrow();
+    String latest =
+        mockMvc
+            .perform(get("/api/businesses/{businessId}/forecasts/latest", businessId))
+            .andExpect(jsonPath("$.data.status").value("STABLE"))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    long runId = objectMapper.readTree(latest).path("data").path("forecastRunId").asLong();
+
+    mockMvc
+        .perform(get("/api/forecasts/{runId}/narratives", runId).param("kind", "STABLE_REASON"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(2));
+    mockMvc
+        .perform(get("/api/forecasts/{runId}/narratives", runId))
+        .andExpect(status().isOk())
+        .andExpect(
+            jsonPath("$.data[?(@.kind=='STATUS_LABEL')].text")
+                .value(org.hamcrest.Matchers.hasItem("안전")));
+  }
+
+  @Test
   void QA_NEW_페르소나는_예측이_없어_404를_반환한다() throws Exception {
     long businessId = businessApi.findBusinessIdByRegNo("QA-NEW").orElseThrow();
 
