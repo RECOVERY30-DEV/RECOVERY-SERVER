@@ -96,6 +96,25 @@ class DemoSeederSmokeTest {
   }
 
   @Test
+  void 동의_항목_마스터와_사업자_동의_상태가_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-RISK").orElseThrow();
+
+    mockMvc
+        .perform(get("/api/consent-types"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(3))
+        .andExpect(jsonPath("$.data[0].code").value("ANALYSIS"))
+        .andExpect(jsonPath("$.data[0].required").value(true));
+
+    mockMvc
+        .perform(get("/api/businesses/{businessId}/consents", businessId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(3))
+        .andExpect(jsonPath("$.data[0].typeCode").value("ANALYSIS"))
+        .andExpect(jsonPath("$.data[0].status").value("GRANTED"));
+  }
+
+  @Test
   void 상담자와_슬롯이_시더로_조회되고_잔여석이_계산된다() throws Exception {
     String body =
         mockMvc
@@ -114,6 +133,19 @@ class DemoSeederSmokeTest {
         .andExpect(jsonPath("$.data[0].remainingSeats").value(2))
         .andExpect(jsonPath("$.data[1].remainingSeats").value(3))
         .andExpect(jsonPath("$.data[2].remainingSeats").value(1));
+  }
+
+  @Test
+  void QA_RISK_연동_데이터_소스_현황이_조회된다() throws Exception {
+    long businessId = businessApi.findBusinessIdByRegNo("QA-RISK").orElseThrow();
+
+    mockMvc
+        .perform(get("/api/businesses/{businessId}/data-sources", businessId))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.length()").value(4))
+        .andExpect(jsonPath("$.data[0].sourceType").value("BANK_ACCOUNT"))
+        .andExpect(jsonPath("$.data[3].sourceType").value("AUTO_TRANSFER"))
+        .andExpect(jsonPath("$.data[3].belowThreshold").value(true));
   }
 
   @Test
