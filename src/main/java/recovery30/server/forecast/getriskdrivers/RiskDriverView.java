@@ -5,8 +5,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * 홈 화면 "주요 위험 신호" 행. 오른쪽 표시값은 클라이언트가 {@code metricText → occurrenceText → occurrenceDate} 순으로 만든다.
- * {@code evidence}는 {@code ?include=evidence}일 때만 채워지고 그 외에는 null이다.
+ * 홈 화면 "주요 위험 신호" 행 + 원인 상세 화면 "주요 원인 TOP 3" 카드. 홈은 {@code rank / title / 우측 지표}만, 원인 상세는 {@code
+ * description}(설명 문단) + {@code assumptionText}(예측 가정) + {@code evidence}(근거 거래)까지 쓴다. 우측 표시값은
+ * 클라이언트가 {@code metricText → occurrenceText → occurrenceDate} 순으로 만든다. {@code evidence}는 {@code
+ * ?include=evidence}일 때만 채워지고 그 외에는 null이다.
  */
 public record RiskDriverView(
     @Schema(description = "순위", example = "1") Integer rank,
@@ -26,6 +28,12 @@ public record RiskDriverView(
     @Schema(description = "부족 기여 금액(원). null이면 '확인 필요'", example = "-1850000")
         Long contributionAmount,
     @Schema(description = "추정치 여부('근거 데이터 부족')", example = "false") boolean estimating,
+    @Schema(
+            description = "원인 설명 문단 (원인 상세 화면). 홈에서는 미표시",
+            example = "6월 30일 임차료 150만 원과 대출 원리금 170만 원이 같은 날 출금 예정입니다. 잔액 부족 가능성이 높습니다.")
+        String description,
+    @Schema(description = "예측 가정 (원인 상세 화면 '예측 가정' 줄). 홈에서는 미표시", example = "최근 3개월 출금 이력 기반 반영")
+        String assumptionText,
     @Schema(description = "근거 거래 목록. ?include=evidence일 때만") List<EvidenceView> evidence) {
 
   /** 원인 상세 화면 "근거 거래" 한 줄. */
